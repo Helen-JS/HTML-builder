@@ -3,17 +3,18 @@ const {resolve} = require('path');
 
 let fileStream = createWriteStream(resolve(__dirname, 'text.txt'), {flags: 'a'});
 let input = process.openStdin();
+const endFunction = ()=> {
+    console.log("\nThe program will exit soon. Thank you for using our application.");
+    fileStream.close();
+    process.exit();
+}
 console.log("Welcome to writing program. " +
     "\nIf you need some help please type .help." +
     "\nProvide your input that you want to save into the file:");
 input.addListener('data', d => {
 
     if(d.toString().trim() === '.exit' || d.toString().trim() === '.quit'){
-       input.end(()=> {
-          console.log("The program will exit soon. Thank you for using our application.");
-          fileStream.close();
-          process.exit();
-       });
+       input.end(endFunction);
     } else if(d.toString().trim() === '.help'){
         console.log("Here are some commands that acceptable by the application:\n" +
             "\t\t .help - Display the available commands into the console\n" +
@@ -22,4 +23,8 @@ input.addListener('data', d => {
     } else {
         fileStream.write(d.toString());
     }
+})
+
+process.on("SIGINT",() =>{
+    endFunction();
 })
