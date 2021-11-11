@@ -5,6 +5,8 @@ const {readdir, stat} = require('fs').promises;
 async function* traverseDir(root) {
   const fileNames = await readdir(root,{ withFileTypes: true });
   for (let fileName of fileNames) {
+    if(fileName.name.startsWith("."))
+      continue;
     const filePath = resolve(root, fileName.name);
     if (fileName.isDirectory()) {
       yield* traverseDir(filePath);
